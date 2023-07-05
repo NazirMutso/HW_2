@@ -1,3 +1,5 @@
+import sqlalchemy.exc
+
 from config_f import *
 
 
@@ -79,3 +81,38 @@ def get_values_api(url):
         str_ks = ' '.join(list_ks)
         data = (company_name, vacancy_name, job_description, str_ks)
         return data
+
+
+# main функция
+def pars_master_2000(url, database, table, func1, func2):
+    engine = create_engine(database)
+    flag = 0
+    num_page = 0
+    while flag < 100:
+        print(f'Парсится страница №{num_page + 1}')
+        url = url+str(num_page)
+        for link in func1(url):
+            try:
+                company, position, job_descrip, key_skills = func2(link)
+                new_vac = table(company_names=company,
+                                         position=position,
+                                         job_description=job_descrip,
+                                         key_skills=key_skills)
+                time.sleep(random.randrange(3, 6))  # пауза чтобы не получить бан
+                with Session(engine) as session:
+                    try:  # записываем данные в базуданных
+                        session.add(new_vac)
+                        session.commit()
+                        flag += 1
+                        print(f'{flag} вакансия "{position}" компании "{company}" записана в таблицу')
+                    except sqlalchemy.exc.IntegrityError:
+                        print(f'"{company}" есть в таблице')
+            except TypeError:  # бывают страницы не подходящее под условия обработки функции "get_cvdks"
+                print('Ошибка: "cannot unpack non-iterable NoneType object"')
+                print('Неподходящий формат данных на странице вакансии')
+                continue
+            if flag == 100:
+                print(f'Записано {flag} вакансий. Программа выполнена')
+                break
+        num_page += 1  # указываем какую страницу результатом поиска обрабатывать
+
