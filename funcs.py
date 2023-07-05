@@ -83,7 +83,8 @@ def get_values_api(url):
         return data
 
 
-# main функция
+# main функция, принимает аргументы: адрес, путь к БД, имя таблицы, функцию получ. ссылок вакансий,
+# функцию получ. данных вакансии
 def pars_master_2000(url, database, table, func1, func2):
     engine = create_engine(database)
     flag = 0
@@ -95,9 +96,9 @@ def pars_master_2000(url, database, table, func1, func2):
             try:
                 company, position, job_descrip, key_skills = func2(link)
                 new_vac = table(company_names=company,
-                                         position=position,
-                                         job_description=job_descrip,
-                                         key_skills=key_skills)
+                                position=position,
+                                job_description=job_descrip,
+                                key_skills=key_skills)
                 time.sleep(random.randrange(3, 6))  # пауза чтобы не получить бан
                 with Session(engine) as session:
                     try:  # записываем данные в базуданных
@@ -115,4 +116,3 @@ def pars_master_2000(url, database, table, func1, func2):
                 print(f'Записано {flag} вакансий. Программа выполнена')
                 break
         num_page += 1  # указываем какую страницу результатом поиска обрабатывать
-
