@@ -20,9 +20,7 @@ def get_links(url):
     print(f'Статус загрузки страницы поиска: {res.status_code}')
     soup = BeautifulSoup(res.content.decode(), 'lxml')
     vac_link = soup.find_all('a', attrs={'data-qa': 'serp-item__title'})
-    links_list = []
-    for link in vac_link:
-        links_list.append(link.attrs.get('href'))
+    links_list = [link.attrs.get('href') for link in vac_link]
     return links_list
 
 
@@ -59,9 +57,7 @@ def get_vacancies_api(url):
     res = requests.get(url, headers=headers, params=params)
     print(f'Статус загрузки страницы поиска: {res.status_code}')
     vacancies = res.json().get('items')
-    vac_links = []
-    for i, vacancy in enumerate(vacancies):
-        vac_links.append(vacancy['url'])
+    vac_links = [vacancy['url'] for i, vacancy in enumerate(vacancies)]
     return vac_links
 
 
