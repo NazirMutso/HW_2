@@ -6,8 +6,6 @@ from config_f import *
 # загружает страницу поиска вакансий с заданными параметрами, возвращает список ссылок на вакансии
 def get_links(url):
     headers = {
-        'Accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / avif, image / webp, '
-                  'image / apng, * / *;q = 0.8, application / signed - exchange;v = b3;q = 0.7',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/114.0.0.0 Safari/537.36'
     }
@@ -28,8 +26,6 @@ def get_links(url):
 # (наз. компании, наз. вакансии, опис. вакансии, ключ. навыки)
 def get_values(link):
     headers = {
-        'Accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / avif, image / webp, '
-                  'image / apng, * / *;q = 0.8, application / signed - exchange;v = b3;q = 0.7',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/114.0.0.0 Safari/537.36'
     }
@@ -79,36 +75,37 @@ def get_values_api(url):
         return data
 
 
-# main функция, принимает аргументы: адрес, путь к БД, имя таблицы, функцию получ. ссылок вакансий,
-# функцию получ. данных вакансии
+# main функция, принимает аргументы: адрес, путь к БД, имя таблицы, функцию обработки страницы поиска вакансий,
+# функцию получение данных вакансии
 def pars_master_2000(url, database, table, func1, func2):
     engine = create_engine(database)
-    flag = 0
-    num_page = 0
-    while flag < 100:
+    flag = 0  # счетчик записанных вакансий
+    num_page = 0  # страница вакансии
+    while flag < 100:  # цикл на обработку 100 вакансий
         print(f'Парсится страница №{num_page + 1}')
         url = url+str(num_page)
-        for link in func1(url):
-            try:
-                company, position, job_descrip, key_skills = func2(link)
+        for link in func1(url):  # функция возвращает список ссылок на вакансии, цикл перебирает их
+            try:  # попытка записать данные в таблицу
+                company, position, job_descrip, key_skills = func2(link)  # функция возвращает кортеж с данными
+                # подготавливаем данные для передачи в таблицу
                 new_vac = table(company_names=company,
                                 position=position,
                                 job_description=job_descrip,
                                 key_skills=key_skills)
-                time.sleep(random.randrange(3, 6))  # пауза чтобы не получить бан
-                with Session(engine) as session:
-                    try:  # записываем данные в базуданных
+                time.sleep(random.randrange(3, 6))  # пауза, чтобы не получить бан
+                with Session(engine) as session:  # открываем базу данных
+                    try:  # записываем в базу данных
                         session.add(new_vac)
                         session.commit()
-                        flag += 1
+                        flag += 1  # добавляем к счетчику вакансий
                         print(f'{flag} вакансия "{position}" компании "{company}" записана в таблицу')
-                    except sqlalchemy.exc.IntegrityError:
+                    except sqlalchemy.exc.IntegrityError:  # если такая компания уже есть в списке
                         print(f'"{company}" есть в таблице')
-            except TypeError:  # бывают страницы не подходящее под условия обработки функции "get_cvdks"
+            except TypeError:  # бывают страницы не подходящее под условия обработки функции получения данных о вакансии
                 print('Ошибка: "cannot unpack non-iterable NoneType object"')
                 print('Неподходящий формат данных на странице вакансии')
                 continue
-            if flag == 100:
+            if flag == 100:  # условие на остановку цикла
                 print(f'Записано {flag} вакансий. Программа выполнена')
                 break
-        num_page += 1  # указываем какую страницу результатом поиска обрабатывать
+        num_page += 1  # указываем какую страницу результатов поиска обрабатывать
