@@ -1,5 +1,3 @@
-import sqlalchemy.exc
-
 from config_f import *
 
 
