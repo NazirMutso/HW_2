@@ -14,7 +14,7 @@ class Vacancies_pars(Base):
     vacancy_id: Mapped[int] = mapped_column(primary_key=True)
     company_names: Mapped[str]
     position: Mapped[str]
-    job_description: Mapped[str]
+    job_description: Mapped[str] = mapped_column(primary_key=True)
     key_skills: Mapped[str]
 
     def __repr__(self):
@@ -26,7 +26,7 @@ class Vacancies_api(Base):
     vacancy_id: Mapped[int] = mapped_column(primary_key=True)
     company_names: Mapped[str]
     position: Mapped[str]
-    job_description: Mapped[str]
+    job_description: Mapped[str] = mapped_column(primary_key=True)
     key_skills: Mapped[str]
 
     def __repr__(self):
