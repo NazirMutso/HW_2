@@ -93,7 +93,6 @@ def pars_master_2000(url, database, table, func1, func2):
     num_page = 0  # страница вакансии
     while flag < 100:  # цикл на обработку 100 вакансий
         my_logger.info(f'Парсится страница поиска №{num_page + 1}')
-        # url = url+str(num_page)
         for link in func1(url, num_page):  # функция возвращает список ссылок на вакансии, цикл перебирает их
             try:  # попытка записать данные в таблицу
                 vac_id, company, position, job_descrip, key_skills = func2(link)  # функция возвращает кортеж с данными
@@ -103,7 +102,6 @@ def pars_master_2000(url, database, table, func1, func2):
                                 position=position,
                                 job_description=job_descrip,
                                 key_skills=key_skills)
-                # time.sleep(random.randrange(3, 6))  # пауза, чтобы не получить бан
                 with Session(engine) as session:  # открываем базу данных
                     try:  # записываем в базу данных
                         session.add(new_vac)
