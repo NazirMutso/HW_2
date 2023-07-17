@@ -4,6 +4,7 @@ engine = create_engine(db_name)
 
 table_name = 'vacancies_pars'
 table_name2 = 'vacancies_api'
+table_name3 = 'vacancies_api_async'
 
 class Base(DeclarativeBase):
     pass
@@ -23,6 +24,18 @@ class Vacancies_pars(Base):
 
 class Vacancies_api(Base):
     __tablename__ = table_name2
+    vacancy_id: Mapped[int] = mapped_column(primary_key=True)
+    company_names: Mapped[str]
+    position: Mapped[str]
+    job_description: Mapped[str] = mapped_column(primary_key=True)
+    key_skills: Mapped[str]
+
+    def __repr__(self):
+        return f'{self.vacancy_id}, {self.company_names}, {self.position}, {self.job_description}, {self.key_skills}'
+
+
+class Vacancies_api_async(Base):
+    __tablename__ = table_name3
     vacancy_id: Mapped[int] = mapped_column(primary_key=True)
     company_names: Mapped[str]
     position: Mapped[str]
