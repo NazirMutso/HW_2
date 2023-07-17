@@ -90,7 +90,7 @@ def get_values_api(url):
 def pars_master_2000(url, database, table, func1, func2):
     engine = create_engine(database)
     flag = 0  # счетчик записанных вакансий
-    num_page = 0  # страница вакансии
+    num_page = 0  # страница поиска вакансий
     while flag < 100:  # цикл на обработку 100 вакансий
         my_logger.info(f'Парсится страница поиска №{num_page + 1}')
         for link in func1(url, num_page):  # функция возвращает список ссылок на вакансии, цикл перебирает их
