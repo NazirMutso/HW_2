@@ -2,7 +2,7 @@ from logger_conf import my_logger
 import asyncio
 from aiohttp import ClientSession, TCPConnector
 from config_f import *
-from table_maker import Vacancies_api, db_name
+from table_maker import Vacancies_api_async, db_name
 
 url_api = 'https://api.hh.ru/vacancies/'
 
@@ -72,5 +72,5 @@ async def pars_master_2000(url, database, table, func1, func2):
 
 
 start = time.time()
-asyncio.run(pars_master_2000(url_api, db_name, Vacancies_api, get_ids, get_vacancy))
+asyncio.run(pars_master_2000(url_api, db_name, Vacancies_api_async, get_ids, get_vacancy))
 print(time.time() - start)
